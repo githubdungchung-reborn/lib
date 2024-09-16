@@ -1,0 +1,32 @@
+name: Test
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs at 8 AM, 2 PM, and 8 PM UTC daily (adjust timing as needed)
+    - cron: '0 8,14,20 * * *'
+
+jobs:
+  increase-downloads:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install npm-increaser-downloads
+        run: npm install -g npm-increaser-downloads
+
+      - name: Run Increase Downloads
+        run: |
+          # Generate random number of downloads between 55 and 155
+          RANDOM_DOWNLOADS=$((55 + RANDOM % 101))
+
+          # Run commands for different packages with random download counts
+          nid --package-name react-theme-switch-animation --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
+          nid --package-name react-native-converted-in-sdk --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
+          nid --package-name npm-increaser-downloads --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
