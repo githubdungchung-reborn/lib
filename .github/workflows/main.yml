@@ -21,29 +21,12 @@ jobs:
       - name: Install npm-increaser-downloads
         run: npm install -g npm-increaser-downloads
 
-      - name: Define packages dynamically
+      - name: Run Increase Downloads
         run: |
-          PACKAGES=(
-            "react-theme-switch-animation"
-            "react-native-converted-in-sdk"
-            "npm-increaser-downloads"
-          )
+          # Generate random number of downloads between 55 and 155
+          RANDOM_DOWNLOADS=$((150 + RANDOM % 500))
 
-          # Export the packages as a comma-separated string
-          echo "PACKAGES=${PACKAGES[*]}" >> $GITHUB_ENV
-
-      - name: Run Increase Downloads for each package
-        run: |
-          # Read the packages from the environment variable
-          IFS=',' read -r -a PACKAGE_LIST <<< "$PACKAGES"
-
-          # Loop through each package and run the increase downloads command
-          for PACKAGE in "${PACKAGE_LIST[@]}"; do
-            # Generate random number of downloads between 55 and 155 for each package
-            RANDOM_DOWNLOADS=$((1000 + RANDOM % 2000))
-
-            # Run the command with the generated random number of downloads
-            nid --package-name "$PACKAGE" --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
-
-            echo "Processed $PACKAGE with $RANDOM_DOWNLOADS downloads"
-          done
+          # Run commands for different packages with random download counts
+          nid --package-name react-theme-switch-animation --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
+          nid --package-name react-native-converted-in-sdk --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
+          nid --package-name npm-increaser-downloads --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
