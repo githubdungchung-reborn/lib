@@ -18,23 +18,32 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Cache npm modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install npm-increaser-downloads
         run: npm install -g npm-increaser-downloads
 
-      - name: Run Increase Downloads
+      - name: Define packages dynamically
         run: |
-          # Generate random number of downloads between 55 and 155
-          RANDOM_DOWNLOADS=$((55 + RANDOM % 101))
+          PACKAGES=(
+            "react-theme-switch-animation"
+            "react-native-converted-in-sdk"
+            "npm-increaser-downloads"
+          )
 
-          # Run commands for different packages with random download counts
-          nid --package-name react-theme-switch-animation --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
-          nid --package-name react-native-converted-in-sdk --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
-          nid --package-name npm-increaser-downloads --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
+          # Export the packages as a comma-separated string
+          echo "PACKAGES=${PACKAGES[*]}" >> $GITHUB_ENV
+
+      - name: Run Increase Downloads for each package
+        run: |
+          # Read the packages from the environment variable
+          IFS=',' read -r -a PACKAGE_LIST <<< "$PACKAGES"
+
+          # Loop through each package and run the increase downloads command
+          for PACKAGE in "${PACKAGE_LIST[@]}"; do
+            # Generate random number of downloads between 55 and 155 for each package
+            RANDOM_DOWNLOADS=$((1000 + RANDOM % 2000))
+
+            # Run the command with the generated random number of downloads
+            nid --package-name "$PACKAGE" --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
+
+            echo "Processed $PACKAGE with $RANDOM_DOWNLOADS downloads"
+          done
