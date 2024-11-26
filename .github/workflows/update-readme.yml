@@ -1,0 +1,30 @@
+name: Update README Randomly
+
+on:
+  schedule:
+    - cron: '0 0 */59 * *' # Runs every 59 days at midnight
+  workflow_dispatch: # Allows manual triggering of the workflow
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Update README with random content
+        run: |
+          # Generate random content
+          RANDOM_CONTENT="Random update on $(date). This is entry #$RANDOM."
+
+          # Append random content to README.md
+          echo "$RANDOM_CONTENT" >> README.md
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "Update README with random content"
+          git push
