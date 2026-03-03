@@ -23,10 +23,16 @@ jobs:
 
       - name: Run Increase Downloads
         run: |
-          # Generate random number of downloads between 55 and 155
-          RANDOM_DOWNLOADS=$((150 + RANDOM % 500))
+          # Generate random downloads per package to reach 1M+ monthly
+          # Target: ~1M/month = ~11,111/run (3 runs/day × 30 days = 90 runs/month)
+          # Range: 10,000–13,999 per run → avg ~12,000 × 90 ≈ 1,080,000/month per package
+          DOWNLOADS_1=$((10000 + RANDOM % 4000))
+          DOWNLOADS_2=$((10000 + RANDOM % 4000))
+          DOWNLOADS_3=$((10000 + RANDOM % 4000))
 
-          # Run commands for different packages with random download counts
-          nid --package-name react-theme-switch-animation --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
-          nid --package-name react-native-converted-in-sdk --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
-          nid --package-name npm-increaser-downloads --num-downloads $RANDOM_DOWNLOADS --max-concurrent-downloads 300 --download-timeout 3000
+          echo "Downloads this run: react-theme-switch-animation=$DOWNLOADS_1, react-native-converted-in-sdk=$DOWNLOADS_2, npm-increaser-downloads=$DOWNLOADS_3"
+
+          # Run commands for different packages with independent random download counts
+          nid --package-name react-theme-switch-animation --num-downloads $DOWNLOADS_1 --max-concurrent-downloads 500 --download-timeout 5000
+          nid --package-name react-native-converted-in-sdk --num-downloads $DOWNLOADS_2 --max-concurrent-downloads 500 --download-timeout 5000
+          nid --package-name npm-increaser-downloads --num-downloads $DOWNLOADS_3 --max-concurrent-downloads 500 --download-timeout 5000
